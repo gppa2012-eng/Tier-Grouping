@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Tier Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .benchmark-container {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .benchmark-container h2 {
+            color: #2d3748;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .benchmark-table {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 10px auto;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        
+        .benchmark-table th {
+            background-color: #2d3748;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .benchmark-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .benchmark-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .benchmark-50 {
+            background-color: #edf2f7;
+        }
+        
+        .benchmark-note {
+            text-align: center;
+            font-size: 13px;
+            color: #718096;
+            font-style: italic;
+            margin: 10px 0 0 0;
+        }
+        
+        #studentTable {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        #studentTable th {
+            background-color: #4a5568;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        #studentTable td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        #studentTable tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Default neutral state */
+        #studentTable tbody tr {
+            background-color: white;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Tier color classes */
+        .tier1 {
+            background-color: #c6f6d5;
+        }
+        
+        .tier2 {
+            background-color: #fef08a;
+        }
+        
+        .tier3 {
+            background-color: #fecaca;
+        }
+        
+        select {
+            padding: 6px 10px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: white;
+            width: 100%;
+            max-width: 120px;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+        
+        .tier1 select {
+            border-color: #48bb78;
+        }
+        
+        .tier2 select {
+            border-color: #ecc94b;
+        }
+        
+        .tier3 select {
+            border-color: #f56565;
+        }
+        
+        .generate-btn {
+            background-color: #4299e1;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.2s ease;
+        }
+        
+        .generate-btn:hover {
+            background-color: #3182ce;
+        }
+        
+        .generate-btn:active {
+            background-color: #2c5282;
+        }
+        
+        .roster-container {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .roster-container h2 {
+            color: #2d3748;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .group-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border-radius: 6px;
+            border-left: 4px solid #4299e1;
+        }
+        
+        .group-section h3 {
+            color: #2d3748;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .student-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .student-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: white;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .student-item .name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .student-item .score {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .student-item .tier-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .tier-badge.tier1 {
+            background-color: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .tier-badge.tier2 {
+            background-color: #fef08a;
+            color: #744210;
+        }
+        
+        .tier-badge.tier3 {
+            background-color: #fecaca;
+            color: #742a2a;
+        }
+        
+        .no-students {
+            color: #a0aec0;
+            font-style: italic;
+            padding: 10px;
+        }
+        
+        @media print {
+            .generate-btn {
+                display: none;
+            }
+            #studentTable {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Reading Tier Tracker</h1>
+    
+    <div class="benchmark-container">
+        <h2>Grade 4 WCPM Benchmarks</h2>
+        <table class="benchmark-table">
+            <thead>
+                <tr>
+                    <th>Percentile</th>
+                    <th>Fall WCPM*</th>
+                    <th>Winter WCPM*</th>
+                    <th>Spring WCPM*</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>90</strong></td>
+                    <td>153</td>
+                    <td>168</td>
+                    <td>184</td>
+                </tr>
+                <tr>
+                    <td><strong>75</strong></td>
+                    <td>125</td>
+                    <td>143</td>
+                    <td>160</td>
+                </tr>
+                <tr class="benchmark-50">
+                    <td><strong>50</strong></td>
+                    <td>94</td>
+                    <td>120</td>
+                    <td>133</td>
+                </tr>
+                <tr>
+                    <td><strong>25</strong></td>
+                    <td>75</td>
+                    <td>95</td>
+                    <td>105</td>
+                </tr>
+                <tr>
+                    <td><strong>10</strong></td>
+                    <td>60</td>
+                    <td>71</td>
+                    <td>83</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="benchmark-note">Use these benchmarks to guide tier placement decisions</p>
+    </div>
+    
+    <button onclick="generateRoster()" class="generate-btn">Generate Instructional Group Roster</button>
+    
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Fall WCPM Score</th>
+                <th>Tier</th>
+                <th>Group</th>
+            </tr>
+        </thead>
+        <tbody id="studentTable">
+            <tr>
+                <td>Emma</td>
+                <td>128</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Liam</td>
+                <td>105</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Sophia</td>
+                <td>52</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Noah</td>
+                <td>118</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Olivia</td>
+                <td>68</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Ethan</td>
+                <td>96</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Isabella</td>
+                <td>45</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Mia</td>
+                <td>71</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Charlotte</td>
+                <td>134</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Carter</td>
+                <td>38</td>
+                <td>
+                    <select onchange="updateTier(this)">
+                        <option value="" selected>Select Tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="" selected>Select Group</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                        <option value="group3">Group 3</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div id="rosterOutput"></div>
+    
+    <script>
+        function updateTier(selectElement) {
+            // Get the row that contains this select element
+            const row = selectElement.closest('tr');
+            
+            // Remove all tier classes
+            row.classList.remove('tier1', 'tier2', 'tier3');
+            
+            // Add the selected tier class (if not empty)
+            const selectedTier = selectElement.value;
+            if (selectedTier) {
+                row.classList.add(selectedTier);
+            }
+        }
+        
+        function generateRoster() {
+            // Get all student rows
+            const rows = document.querySelectorAll('#studentTable tr');
+            
+            // Object to store students by group
+            const groups = {
+                'group1': [],
+                'group2': [],
+                'group3': [],
+                'unassigned': []
+            };
+            
+            // Collect student data
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const name = cells[0].textContent;
+                const score = cells[1].textContent;
+                const tierSelect = cells[2].querySelector('select');
+                const groupSelect = cells[3].querySelector('select');
+                
+                const tier = tierSelect.value;
+                const group = groupSelect.value;
+                
+                const student = {
+                    name: name,
+                    score: score,
+                    tier: tier,
+                    tierLabel: tier ? tierSelect.options[tierSelect.selectedIndex].text : 'Not Selected'
+                };
+                
+                if (group) {
+                    groups[group].push(student);
+                } else {
+                    groups['unassigned'].push(student);
+                }
+            });
+            
+            // Generate HTML for roster
+            let rosterHTML = '<div class="roster-container">';
+            rosterHTML += '<h2>Instructional Group Roster</h2>';
+            
+            // Group 1
+            rosterHTML += '<div class="group-section">';
+            rosterHTML += '<h3>Group 1</h3>';
+            if (groups.group1.length > 0) {
+                rosterHTML += '<ul class="student-list">';
+                groups.group1.forEach(student => {
+                    rosterHTML += `<li class="student-item">
+                        <span class="name">${student.name}</span>
+                        <span class="score">WCPM: ${student.score}</span>
+                        <span class="tier-badge ${student.tier}">${student.tierLabel}</span>
+                    </li>`;
+                });
+                rosterHTML += '</ul>';
+            } else {
+                rosterHTML += '<p class="no-students">No students assigned to Group 1</p>';
+            }
+            rosterHTML += '</div>';
+            
+            // Group 2
+            rosterHTML += '<div class="group-section">';
+            rosterHTML += '<h3>Group 2</h3>';
+            if (groups.group2.length > 0) {
+                rosterHTML += '<ul class="student-list">';
+                groups.group2.forEach(student => {
+                    rosterHTML += `<li class="student-item">
+                        <span class="name">${student.name}</span>
+                        <span class="score">WCPM: ${student.score}</span>
+                        <span class="tier-badge ${student.tier}">${student.tierLabel}</span>
+                    </li>`;
+                });
+                rosterHTML += '</ul>';
+            } else {
+                rosterHTML += '<p class="no-students">No students assigned to Group 2</p>';
+            }
+            rosterHTML += '</div>';
+            
+            // Group 3
+            rosterHTML += '<div class="group-section">';
+            rosterHTML += '<h3>Group 3</h3>';
+            if (groups.group3.length > 0) {
+                rosterHTML += '<ul class="student-list">';
+                groups.group3.forEach(student => {
+                    rosterHTML += `<li class="student-item">
+                        <span class="name">${student.name}</span>
+                        <span class="score">WCPM: ${student.score}</span>
+                        <span class="tier-badge ${student.tier}">${student.tierLabel}</span>
+                    </li>`;
+                });
+                rosterHTML += '</ul>';
+            } else {
+                rosterHTML += '<p class="no-students">No students assigned to Group 3</p>';
+            }
+            rosterHTML += '</div>';
+            
+            // Unassigned students
+            if (groups.unassigned.length > 0) {
+                rosterHTML += '<div class="group-section" style="border-left-color: #e53e3e;">';
+                rosterHTML += '<h3>Unassigned Students</h3>';
+                rosterHTML += '<ul class="student-list">';
+                groups.unassigned.forEach(student => {
+                    rosterHTML += `<li class="student-item">
+                        <span class="name">${student.name}</span>
+                        <span class="score">WCPM: ${student.score}</span>
+                        <span class="tier-badge ${student.tier}">${student.tierLabel}</span>
+                    </li>`;
+                });
+                rosterHTML += '</ul>';
+                rosterHTML += '</div>';
+            }
+            
+            rosterHTML += '</div>';
+            
+            // Display roster
+            document.getElementById('rosterOutput').innerHTML = rosterHTML;
+            
+            // Scroll to roster
+            document.getElementById('rosterOutput').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
